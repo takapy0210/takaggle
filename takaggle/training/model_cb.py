@@ -1,8 +1,8 @@
 import os
 import sys
 from catboost import CatBoostRegressor, CatBoostClassifier
-from model import Model
-from util import Util
+from takaggle.model import Model
+from takaggle.util import Util
 
 
 class ModelCB(Model):

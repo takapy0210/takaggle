@@ -6,14 +6,14 @@ import csv
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from model import Model
+from takaggle.model import Model
 from collections import Counter, defaultdict
 import random
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, train_test_split
 from typing import Optional, Tuple, Union
-from util import Logger, Util
-from TimeSeriesSplitter import CustomTimeSeriesSplitter
+from takaggle.util import Logger, Util
+from takaggle.TimeSeriesSplitter import CustomTimeSeriesSplitter
 
 # 定数
 shap_sampling = 10000

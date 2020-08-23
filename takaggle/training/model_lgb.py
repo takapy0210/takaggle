@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import shap
 import lightgbm as lgb
 from sklearn.metrics import average_precision_score
-from model import Model
-from util import Util
+from takaggle.model import Model
+from takaggle.util import Util
 
 
 # LightGBMに使えるカスタムメトリクス

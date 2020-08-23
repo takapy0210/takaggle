@@ -10,8 +10,8 @@ from keras.utils import np_utils
 from keras import optimizers
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from model import Model
-from util import Util
+from takaggle.model import Model
+from takaggle.util import Util
 
 
 class ModelNN(Model):
