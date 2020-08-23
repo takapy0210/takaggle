@@ -47,3 +47,40 @@ def division(df, targets_list) -> pd.DataFrame:
         df_division[column_name] = value
 
     return df_division
+
+
+def create_day_feature(df, col, prefix,
+                       attrs=['year', 'quarter', 'month', 'week', 'day', 'dayofweek', 'hour', 'minute']):
+    """日時特徴量の生成処理
+
+    Args:
+        df (pd.DataFrame): 日時特徴量を含むDF
+        col (str)): 日時特徴量のカラム名
+        prefix (str): 新しく生成するカラム名に付与するprefix
+        attrs (list of str): 生成する日付特徴量. Defaults to ['year', 'quarter', 'month', 'week', 'day', 'dayofweek', 'hour', 'minute']
+                             cf. https://qiita.com/Takemura-T/items/79b16313e45576bb6492
+
+    Returns:
+        pd.DataFrame: 日時特徴量を付与したDF
+
+    """
+
+    for attr in attrs:
+        dtype = np.int16 if attr == 'year' else np.int8
+        df[prefix + '_' + attr] = getattr(df[col].dt, attr).astype(dtype)
+
+    # 土日フラグ
+    df[prefix + '_is_weekend'] = df[prefix + '_dayofweek'].isin([5, 6]).astype(np.int8)
+
+    # 日付の周期性を算出
+    def sin_cos_encode(df, col):
+        df[col + '_cos'] = np.cos(2 * np.pi * df[col] / df[col].max())
+        df[col + '_sin'] = np.sin(2 * np.pi * df[col] / df[col].max())
+        return df
+
+    for col in [prefix + '_' + 'quarter', prefix + '_' + 'month', prefix + '_' + 'day', prefix + '_' + 'dayofweek',
+                prefix + '_' + 'hour', prefix + '_' + 'minute']:
+        if col in df.columns.tolist():
+            df = sin_cos_encode(df, col)
+
+    return df
