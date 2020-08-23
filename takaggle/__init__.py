@@ -1,4 +1,4 @@
-from takaggle import *
+# from takaggle import *
 
 
 def main():
