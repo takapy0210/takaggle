@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import xgboost as xgb
-from takaggle.model import Model
-from takaggle.util import Util
+from takaggle.training.model import Model
+from takaggle.training.util import Util
 
 # 各foldのモデルを保存する配列
 model_array = []

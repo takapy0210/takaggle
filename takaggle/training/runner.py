@@ -12,8 +12,8 @@ import random
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, train_test_split
 from typing import Optional, Tuple, Union
-from takaggle.util import Logger, Util
-from takaggle.TimeSeriesSplitter import CustomTimeSeriesSplitter
+from takaggle.training.util import Logger, Util
+from takaggle.training.TimeSeriesSplitter import CustomTimeSeriesSplitter
 
 # 定数
 shap_sampling = 10000
