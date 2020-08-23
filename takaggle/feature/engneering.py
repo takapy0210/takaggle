@@ -2,48 +2,89 @@ import pandas as pd
 import numpy as np
 
 
-def aggregation(train_df, test_df, target, features_list, agg_list=['mean', 'std', 'median']) -> pd.DataFrame:
-    """集計特徴量を生成する関数
-    :train_df:tranデータ
-    :test_df:testデータ
-    :target:集計元の特徴量
-    :features_list:集計対象の特徴量のリスト
-    :agg_list:計算する統計量のリスト
+def aggregation(df, target_col, agg_target_col):
+    """集計特徴量の生成処理
+
+    Args:
+        df (pd.DataFrame): 対象のDF
+        target_col (list of str): 集計元カラム（多くの場合カテゴリ変数のカラム名リスト）
+        agg_target_col (str): 集計対象のカラム（多くの場合連続変数）
+
+    Returns:
+        pd.DataFrame: データフレーム
     """
-    tmp_df = pd.concat([train_df, test_df], axis=0, sort=False).reset_index(drop=True)
-    tmp_df = tmp_df.groupby(target)[features_list].agg(agg_list).reset_index()
-    return tmp_df
+
+    # カラム名を定義
+    target_col_name = ''
+    for col in target_col:
+        target_col_name += str(col)
+        target_col_name += '_'
+
+    gr = df.groupby(target_col)[agg_target_col]
+    df[f'{target_col_name}{agg_target_col}_mean'] = gr.transform('mean').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_max'] = gr.transform('max').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_min'] = gr.transform('min').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_std'] = gr.transform('std').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_median'] = gr.transform('median').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_count'] = gr.transform('count').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_sum'] = gr.transform('sum').astype('float16')
+
+    # quantile
+    # 10%, 25%, 50%, 75%, 90%
+    q10 = gr.quantile(0.1).reset_index().rename({agg_target_col: f'{target_col_name}{agg_target_col}_q10'}, axis=1)
+    q25 = gr.quantile(0.25).reset_index().rename({agg_target_col: f'{target_col_name}{agg_target_col}_q25'}, axis=1)
+    q50 = gr.quantile(0.5).reset_index().rename({agg_target_col: f'{target_col_name}{agg_target_col}_q50'}, axis=1)
+    q75 = gr.quantile(0.75).reset_index().rename({agg_target_col: f'{target_col_name}{agg_target_col}_q75'}, axis=1)
+    q90 = gr.quantile(0.9).reset_index().rename({agg_target_col: f'{target_col_name}{agg_target_col}_q90'}, axis=1)
+    df = pd.merge(df, q10, how='left', on=target_col)
+    df = pd.merge(df, q25, how='left', on=target_col)
+    df = pd.merge(df, q50, how='left', on=target_col)
+    df = pd.merge(df, q75, how='left', on=target_col)
+    df = pd.merge(df, q90, how='left', on=target_col)
+
+    # 差分
+    df[f'{target_col_name}{agg_target_col}_max_minus_q90']\
+        = df[f'{target_col_name}{agg_target_col}_max'] - df[f'{target_col_name}{agg_target_col}_q90']
+    df[f'{target_col_name}{agg_target_col}_max_minus_q75']\
+        = df[f'{target_col_name}{agg_target_col}_max'] - df[f'{target_col_name}{agg_target_col}_q75']
+    df[f'{target_col_name}{agg_target_col}_max_minus_q50']\
+        = df[f'{target_col_name}{agg_target_col}_max'] - df[f'{target_col_name}{agg_target_col}_q50']
+    df[f'{target_col_name}{agg_target_col}_mean_minus_q90']\
+        = df[f'{target_col_name}{agg_target_col}_mean'] - df[f'{target_col_name}{agg_target_col}_q90']
+    df[f'{target_col_name}{agg_target_col}_mean_minus_q75']\
+        = df[f'{target_col_name}{agg_target_col}_mean'] - df[f'{target_col_name}{agg_target_col}_q75']
+    df[f'{target_col_name}{agg_target_col}_mean_minus_q50']\
+        = df[f'{target_col_name}{agg_target_col}_mean'] - df[f'{target_col_name}{agg_target_col}_q50']
+
+    # 自身の値との差分
+    df[f'{target_col_name}{agg_target_col}_mean_diff'] = df[agg_target_col] - df[f'{target_col_name}{agg_target_col}_mean']
+    df[f'{target_col_name}{agg_target_col}_max_diff'] = df[agg_target_col] - df[f'{target_col_name}{agg_target_col}_max']
+    df[f'{target_col_name}{agg_target_col}_min_diff'] = df[agg_target_col] - df[f'{target_col_name}{agg_target_col}_min']
+
+    return df
 
 
-def binning(train_df, test_df, target, bin_edges) -> pd.Series:
-    """連続変数などをbin分割する関数
-    デフォルトでは左側（小さい方）のエッジの値は含まれない。
-    :train_df:tranデータ
-    :test_df:testデータ
-    :target:bin分割対象の特徴量
-    :bin_edges:ビン分割の範囲のリスト
-    """
-    train_binned = pd.cut(train_df[target], bin_edges, labels=False)
-    test_binned = pd.cut(test_df[target], bin_edges, labels=False)
-    return train_binned, test_binned
-
-
-def division(df, targets_list) -> pd.DataFrame:
+def division(df, target_list) -> pd.DataFrame:
     """リストの特徴量を除算する関数
-    :df:dfデータ
-    :targets_list:除算対象の特徴量2次元リスト[[a, b], [b, c]]と指定した場合はa/bとb/cが計算される
+
+    Args:
+        df (pd.DataFrame): 対象のDF
+        target_list (list of str): 除算対象の特徴量2次元リスト[[a, b], [b, c]]と指定した場合はa/bとb/cが計算される
+
+    Returns:
+        pd.DataFrame: データフレーム
     """
     df_division = pd.DataFrame()
-    for i in range(len(targets_list)):
+    for i in range(len(target_list)):
         column_name = ''
         value = 0
-        feature1 = targets_list[i][0]
-        feature2 = targets_list[i][1]
+        feature1 = target_list[i][0]
+        feature2 = target_list[i][1]
         value = round(df[feature1] / df[feature2], 3)
         value = value.replace([np.inf, -np.inf], np.nan)
         value = value.fillna(0)
 
-        column_name = targets_list[i][0] + '_div_' + targets_list[i][1]
+        column_name = target_list[i][0] + '_div_' + target_list[i][1]
         df_division[column_name] = value
 
     return df_division
@@ -64,6 +105,8 @@ def create_day_feature(df, col, prefix,
         pd.DataFrame: 日時特徴量を付与したDF
 
     """
+
+    df.loc[:, col] = pd.to_datetime(df[col])
 
     for attr in attrs:
         dtype = np.int16 if attr == 'year' else np.int8
