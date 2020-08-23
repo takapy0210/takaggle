@@ -5,13 +5,13 @@ import sys
 import csv
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from takaggle.model import Model
 from collections import Counter, defaultdict
 import random
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, train_test_split
 from typing import Optional, Tuple, Union
+
+from takaggle.training.model import Model
 from takaggle.training.util import Logger, Util
 from takaggle.training.TimeSeriesSplitter import CustomTimeSeriesSplitter
 
