@@ -1,5 +1,1 @@
-# from takaggle import *
-
-
-def main():
-    pass
+from takaggle import *
