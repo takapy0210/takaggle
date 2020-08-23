@@ -13,7 +13,16 @@ pip install git+https://github.com/takapy0210/takaggle
 ```
 
 ## Usage
-TBD
+
+
+### import
+
+```python
+from takaggle.eda import show_all
+from takaggle.feature import category_encoder
+...
+```
+
 
 ## Document
 TBD
