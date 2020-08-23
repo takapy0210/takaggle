@@ -13,3 +13,5 @@ tensorflow
 keras
 mlflow
 pyyaml
+shap
+kaggle
