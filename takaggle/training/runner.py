@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter, defaultdict
 import random
-from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error, accuracy_score
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, train_test_split
 from typing import Optional, Tuple, Union
 
@@ -114,6 +114,8 @@ class Runner:
             self.metrics = mean_squared_log_error
         elif self.metrics_name == 'MAE':
             self.metrics = mean_absolute_error
+        elif self.metrics_name == 'ACC':
+            self.metrics = accuracy_score
         elif self.metrics_name == 'CUSTOM':
             self.metrics = None
         else:
