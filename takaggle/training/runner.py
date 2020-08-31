@@ -270,6 +270,9 @@ class Runner:
                 va_pred = np.expm1(va_pred)
                 va_pred = np.where(va_pred < 0, 0, va_pred)
                 score = np.sqrt(self.metrics(np.expm1(va_y), va_pred))
+            elif self.metrics_name == 'ACC':
+                va_pred = np.round(va_pred)
+                score = self.metrics(va_y, va_pred)
             else:
                 score = self.metrics(va_y, va_pred)
 
