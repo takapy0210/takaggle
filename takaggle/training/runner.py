@@ -106,6 +106,7 @@ class Runner:
 
         # 評価指標
         self.metrics_name = setting.get('metrics')
+        self.logger.info(f'{self.run_name} - metrics is {self.metrics_name}')
         if self.metrics_name == 'MSE':
             self.metrics = mean_squared_error
         elif self.metrics_name == 'RMSE':
