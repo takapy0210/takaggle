@@ -45,33 +45,71 @@ def binary_encoder(df, cols):
 
 
 # ****** ターゲットエンコーディング *******
-def target_encoder_mean(train_df, test_df, cols, target):
-    target_mean = train_df.groupby(cols)[target].mean()
-    return pd.DataFrame(train_df[cols].map(target_mean)), pd.DataFrame(test_df[cols].map(target_mean))
+def target_encoder_mean(df, train_df, cols, target):
+    """目的変数の平均でエンコードする
+    """
+    target_col_name = ''
+    for col in cols:
+        target_col_name += str(col)
+        target_col_name += '_'
+    target_mean = train_df.groupby(cols)[target].mean().reset_index()\
+        .rename({target: f'{target_col_name}targetenc_mean'}, axis=1)
+    return pd.merge(df, target_mean, on=cols, how='left')
 
 
-def target_encoder_std(train_df, test_df, cols, target):
-    target_mean = train_df.groupby(cols)[target].std()
-    return pd.DataFrame(train_df[cols].map(target_mean)), pd.DataFrame(test_df[cols].map(target_mean))
+def target_encoder_std(df, train_df, cols, target):
+    """目的変数の標準偏差でエンコードする
+    """
+    target_col_name = ''
+    for col in cols:
+        target_col_name += str(col)
+        target_col_name += '_'
+    target_mean = train_df.groupby(cols)[target].std().reset_index()\
+        .rename({target: f'{target_col_name}targetenc_std'}, axis=1)
+    return pd.merge(df, target_mean, on=cols, how='left')
 
 
-def target_encoder(train_df, test_df, cols, target):
+def target_encoder(df, train_df, cols, target):
+    """ceを用いたターゲットエンコーディング
+    """
     ce_tgt = ce.TargetEncoder(cols=cols)
-    tmp_train = ce_tgt.fit_transform(X=train_df[cols], y=train_df[target])
-    if test_df is not None:
-        tmp_test = ce_tgt.transform(test_df[cols])
-        return tmp_train, tmp_test
-    return tmp_train, None
+    ce_tgt.fit(X=train_df[cols], y=train_df[target])
+    _df = ce_tgt.transform(df[cols])
+    # カラム名の変更
+    for col in cols:
+        _df = _df.rename({col: f'{col}_targetenc_ce'}, axis=1)
+    return pd.concat([df, _df], axis=1)
 
 
-def target_encoder_loo(train_df, test_df, cols, target):
+def target_encoder_loo(df, train_df, cols, target):
     # こちらは正真正銘looエンコードする
     ce_loo = ce.LeaveOneOutEncoder(cols=cols)
-    tmp_train = ce_loo.fit_transform(X=train_df[cols], y=train_df[target])
-    if test_df is not None:
-        tmp_test = ce_loo.transform(test_df[cols])
-        return tmp_train, tmp_test
-    return tmp_train, None
+    ce_loo.fit(X=train_df[cols], y=train_df[target])
+    _df = ce_loo.transform(df[cols])
+    # カラム名の変更
+    for col in cols:
+        _df = _df.rename({col: f'{col}_targetenc_ce_loo'}, axis=1)
+    return pd.concat([df, _df], axis=1)
+
+
+def target_encoder_catboost(df, train_df, cols, target):
+    ce_cbe = ce.CatBoostEncoder(cols=cols, random_state=42)
+    ce_cbe.fit(X=train_df[cols], y=train_df[target])
+    _df = ce_cbe.transform(df[cols])
+    # カラム名の変更
+    for col in cols:
+        _df = _df.rename({col: f'{col}_targetenc_ce_cbe'}, axis=1)
+    return pd.concat([df, _df], axis=1)
+
+
+def target_encoder_jamesstein(df, train_df, cols, target):
+    ce_jse = ce.JamesSteinEncoder(cols=cols, drop_invariant=True)
+    ce_jse.fit(X=train_df[cols], y=train_df[target])
+    _df = ce_jse.transform(df[cols])
+    # カラム名の変更
+    for col in cols:
+        _df = _df.rename({col: f'{col}_targetenc_ce_jse'}, axis=1)
+    return pd.concat([df, _df], axis=1)
 
 
 def target_encoder_loo_include_self(train_df, test_df, cols, target):
@@ -80,23 +118,5 @@ def target_encoder_loo_include_self(train_df, test_df, cols, target):
     tmp_train = ce_loo.transform(train_df[cols])
     if test_df is not None:
         tmp_test = ce_loo.transform(test_df[cols])
-        return tmp_train, tmp_test
-    return tmp_train, None
-
-
-def target_encoder_catboost(train_df, test_df, cols, target):
-    ce_cbe = ce.CatBoostEncoder(cols=cols, random_state=42)
-    tmp_train = ce_cbe.fit_transform(X=train_df[cols], y=train_df[target])
-    if test_df is not None:
-        tmp_test = ce_cbe.transform(test_df[cols])
-        return tmp_train, tmp_test
-    return tmp_train, None
-
-
-def target_encoder_jamesstein(train_df, test_df, cols, target):
-    ce_jse = ce.JamesSteinEncoder(cols=cols, drop_invariant=True)
-    tmp_train = ce_jse.fit_transform(X=train_df[cols], y=train_df[target])
-    if test_df is not None:
-        tmp_test = ce_jse.transform(test_df[cols])
         return tmp_train, tmp_test
     return tmp_train, None
