@@ -412,6 +412,8 @@ class Runner:
             model.load_model(self.out_dir_name)
             if self.metrics_name == 'RMSLE':
                 pred = np.expm1(model.predict(test_x))
+            elif self.metrics_name == 'ACC':
+                pred = np.round(model.predict(test_x))
             else:
                 pred = model.predict(test_x)
             preds.append(pred)
