@@ -20,6 +20,6 @@ git commit -m "$msg"
 git push origin master
 
 # tag
-tag_name="v1.0.3"
+tag_name="v1.0.4"
 git tag $tag_name
 git push origin $tag_name

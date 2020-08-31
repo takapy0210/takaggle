@@ -412,15 +412,16 @@ class Runner:
             model.load_model(self.out_dir_name)
             if self.metrics_name == 'RMSLE':
                 pred = np.expm1(model.predict(test_x))
-            elif self.metrics_name == 'ACC':
-                pred = np.round(model.predict(test_x))
             else:
                 pred = model.predict(test_x)
             preds.append(pred)
             self.logger.info(f'{self.run_name} - end prediction fold:{i_fold}')
 
         # 予測の平均値を出力する
-        pred_avg = np.mean(preds, axis=0)
+        if self.metrics_name == 'ACC':
+            pred_avg = np.round(np.mean(preds, axis=0))
+        else:
+            pred_avg = np.mean(preds, axis=0)
 
         # 推論結果の保存（submit対象データ）
         Util.dump_df_pickle(pd.DataFrame(pred_avg), self.out_dir_name + f'{self.run_name}_pred.pkl')
