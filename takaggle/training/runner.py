@@ -103,6 +103,12 @@ class Runner:
         self.model_dir_name = setting.get('model_directory')  # 学習データの読み込み先ディレクトリ
         self.train_file_name = setting.get('train_file_name')
         self.test_file_name = setting.get('test_file_name')
+        self.run_name = run_name  # run名
+        self.model_cls = model_cls  # モデルクラス
+        self.features = features  # 使用する特徴量のリスト
+        self.params = params  # モデルのハイパーパラメータ
+        self.out_dir_name = self.model_dir_name + run_name + '/'
+        self.logger = Logger(self.out_dir_name)
 
         # 評価指標
         self.metrics_name = setting.get('metrics')
@@ -122,13 +128,7 @@ class Runner:
         else:
             self.metrics = None
 
-        # base情報
-        self.run_name = run_name  # run名
-        self.model_cls = model_cls  # モデルクラス
-        self.features = features  # 使用する特徴量のリスト
-        self.params = params  # モデルのハイパーパラメータ
-        self.out_dir_name = self.model_dir_name + run_name + '/'
-        self.logger = Logger(self.out_dir_name)
+        # データの読み込み
         self.train_x = self.load_x_train()  # 学習データの読み込み
         self.train_y = self.load_y_train()  # 学習データの読み込み
 
