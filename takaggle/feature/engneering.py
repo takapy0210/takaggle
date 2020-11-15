@@ -2,6 +2,28 @@ import pandas as pd
 import numpy as np
 
 
+def get_category_col(df):
+    """カテゴリ型のカラム名を取得"""
+    category_cols = []
+    numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    for col in df.columns:
+        col_type = df[col].dtypes
+        if col_type not in numerics:
+            category_cols.append(col)
+    return category_cols
+
+
+def get_num_col(df):
+    """数値型のカラム名を取得"""
+    num_cols = []
+    numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    for col in df.columns:
+        col_type = df[col].dtypes
+        if col_type in numerics:
+            num_cols.append(col)
+    return num_cols
+
+
 def aggregation(df, target_col, agg_target_col):
     """集計特徴量の生成処理
 

@@ -32,3 +32,13 @@ TBD
 
 ## Other
 TBD
+
+## Deploy
+increment `deploy.sh` tag_name
+```
+tag_name="v1.0.5"
+```
+
+```
+sh deploy.sh
+```
