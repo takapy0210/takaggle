@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter, defaultdict
 import random
-from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error, accuracy_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error, accuracy_score, average_precision_score
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, train_test_split
 from typing import Optional, Tuple, Union
 
@@ -22,6 +22,7 @@ corr_sampling = 10000
 
 def rmse(val_y, val_pred):
     return np.sqrt(mean_squared_error(val_y, val_pred))
+
 
 
 def stratified_group_k_fold(X, y, groups, k, seed=None) -> (list, list):
@@ -123,6 +124,8 @@ class Runner:
             self.metrics = mean_absolute_error
         elif self.metrics_name == 'ACC':
             self.metrics = accuracy_score
+        elif self.metrics_name == 'PR_AUC':
+            self.metrics = average_precision_score
         elif self.metrics_name == 'CUSTOM':
             self.metrics = None
         else:
