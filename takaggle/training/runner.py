@@ -24,7 +24,6 @@ def rmse(val_y, val_pred):
     return np.sqrt(mean_squared_error(val_y, val_pred))
 
 
-
 def stratified_group_k_fold(X, y, groups, k, seed=None) -> (list, list):
     """StratifiedKFoldで分割する関数
 
@@ -86,7 +85,7 @@ def stratified_group_k_fold(X, y, groups, k, seed=None) -> (list, list):
 
 class Runner:
 
-    def __init__(self, run_name, model_cls, features, setting, params, cv):
+    def __init__(self, run_name, model_cls, features, setting, params, cv, categoricals=[]):
         """コンストラクタ
         :run_name: runの名前
         :model_cls: モデルのクラス
@@ -154,7 +153,7 @@ class Runner:
         self.remove_train_index = None  # trainデータからデータを絞り込む際に使用する。除外するindexを保持。
         if self.calc_shap:
             self.shap_values = np.zeros(self.train_x.shape)
-        self.categoricals = []  # カテゴリ変数を指定する場合に使用する
+        self.categoricals = categoricals  # カテゴリ変数を指定する場合に使用する
 
         # ログにデータ件数を出力
         self.logger.info(f'{self.run_name} - train_x shape: {self.train_x.shape}')
