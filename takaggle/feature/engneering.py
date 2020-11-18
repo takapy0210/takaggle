@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
+from datetime import timedelta
 
 
 def get_category_col(df):
     """カテゴリ型のカラム名を取得"""
     category_cols = []
-    numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    numerics = ['int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64', 'float16', 'float32', 'float64']
     for col in df.columns:
         col_type = df[col].dtypes
         if col_type not in numerics:
@@ -48,8 +49,8 @@ def aggregation(df, target_col, agg_target_col):
     df[f'{target_col_name}{agg_target_col}_min'] = gr.transform('min').astype('float16')
     df[f'{target_col_name}{agg_target_col}_std'] = gr.transform('std').astype('float16')
     df[f'{target_col_name}{agg_target_col}_median'] = gr.transform('median').astype('float16')
-    df[f'{target_col_name}{agg_target_col}_count'] = gr.transform('count').astype('float16')
-    df[f'{target_col_name}{agg_target_col}_sum'] = gr.transform('sum').astype('float16')
+    df[f'{target_col_name}{agg_target_col}_count'] = gr.transform('count').astype('float16')  # これ怪しいかも
+    df[f'{target_col_name}{agg_target_col}_sum'] = gr.transform('sum').astype('float16')  # これ怪しいかも
 
     # quantile
     # 10%, 25%, 50%, 75%, 90%
@@ -112,7 +113,7 @@ def division(df, target_list) -> pd.DataFrame:
     return df_division
 
 
-def create_day_feature(df, col, prefix,
+def create_day_feature(df, col, prefix, change_utc2asia=False,
                        attrs=['year', 'quarter', 'month', 'week', 'day', 'dayofweek', 'hour', 'minute']):
     """日時特徴量の生成処理
 
@@ -128,6 +129,11 @@ def create_day_feature(df, col, prefix,
 
     """
 
+    # utc -> asia/tokyo
+    if change_utc2asia:
+        df.loc[:, col] = pd.to_datetime(df[col]) + timedelta(hours=9)
+    else:
+        df.loc[:, col] = pd.to_datetime(df[col])
     df.loc[:, col] = pd.to_datetime(df[col])
 
     for attr in attrs:
@@ -137,6 +143,9 @@ def create_day_feature(df, col, prefix,
     # 土日フラグ
     df[prefix + '_is_weekend'] = df[prefix + '_dayofweek'].isin([5, 6]).astype(np.int8)
 
+    # 時間帯情報
+    df[prefix + '_hour_zone'] = pd.cut(df[prefix + '_' + 'hour'].values, bins=[-np.inf, 6, 12, 18, np.inf]).codes
+
     # 日付の周期性を算出
     def sin_cos_encode(df, col):
         df[col + '_cos'] = np.cos(2 * np.pi * df[col] / df[col].max())
@@ -144,7 +153,7 @@ def create_day_feature(df, col, prefix,
         return df
 
     for col in [prefix + '_' + 'quarter', prefix + '_' + 'month', prefix + '_' + 'day', prefix + '_' + 'dayofweek',
-                prefix + '_' + 'hour', prefix + '_' + 'minute']:
+                prefix + '_' + 'hour', prefix + '_' + 'minute', prefix + '_' + 'hour_zone']:
         if col in df.columns.tolist():
             df = sin_cos_encode(df, col)
 
