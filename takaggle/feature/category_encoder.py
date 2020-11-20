@@ -10,6 +10,7 @@ def sklearn_label_encoder(df, cols, del_col=False):
     Args:
         df: カテゴリ変換する対象のデータフレーム
         cols (list of str): カテゴリ変換する対象のカラムリスト
+        del_col (bool): エンコード対象のカラムを削除するか否か
 
     Returns:
         pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
@@ -32,14 +33,53 @@ def sklearn_label_encoder(df, cols, del_col=False):
 
 
 def sklearn_oh_encoder(df, cols, del_col=False):
-    for col in cols:
-        ohe = OneHotEncoder(sparse=False)
-        ohe_df = pd.DataFrame(ohe.fit_transform(df[[col]])).add_prefix(col + '_oh_enc_')
-        # 元のDFに結合
-        df = pd.concat([df, ohe_df], axis=1)
-        # oheしたカラムを除外
-        df = df.drop(col, axis=1)
+    """カテゴリ変換
+    sklearnのOneHotEncoderでEncodingを行う
+
+    Args:
+        df: カテゴリ変換する対象のデータフレーム
+        cols (list of str): カテゴリ変換する対象のカラムリスト
+        del_col (bool): エンコード対象のカラムを削除するか否か
+
+    Returns:
+        pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
+    """
+    if del_col:
+        for col in cols:
+            ohe = OneHotEncoder(sparse=False)
+            ohe_df = pd.DataFrame(ohe.fit_transform(df[[col]])).add_prefix(col + '_oh_enc_')
+            # 元のDFに結合
+            df = pd.concat([df, ohe_df], axis=1)
+            # oheしたカラムを除外
+            df = df.drop(col, axis=1)
+    else:
+        for col in cols:
+            ohe = OneHotEncoder(sparse=False)
+            ohe_df = pd.DataFrame(ohe.fit_transform(df[[col]])).add_prefix(col + '_oh_enc_')
+            # 元のDFに結合
+            df = pd.concat([df, ohe_df], axis=1)
     return df
+
+
+def count_encoder(df, cols):
+    """count encoding
+
+    Args:
+        df: カテゴリ変換する対象のデータフレーム
+        cols (list of str): カテゴリ変換する対象のカラムリスト
+
+    Returns:
+        pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
+    """
+    out_df = pd.DataFrame()
+    for c in cols:
+        series = df[c]
+        vc = series.value_counts(dropna=False)
+        _df = pd.DataFrame(df[c].map(vc))
+        out_df = pd.concat([out_df, _df], axis=1)
+
+    out_df = out_df.add_suffix('_count_enc')
+    return pd.concat([df, out_df], axis=1)
 
 
 def ordinal_encoder(df, cols):

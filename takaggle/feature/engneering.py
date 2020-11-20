@@ -49,7 +49,6 @@ def aggregation(df, target_col, agg_target_col):
     df[f'{target_col_name}{agg_target_col}_min'] = gr.transform('min').astype('float16')
     df[f'{target_col_name}{agg_target_col}_std'] = gr.transform('std').astype('float16')
     df[f'{target_col_name}{agg_target_col}_median'] = gr.transform('median').astype('float16')
-    df[f'{target_col_name}{agg_target_col}_count'] = gr.transform('count').astype('float16')  # これ怪しいかも
     df[f'{target_col_name}{agg_target_col}_sum'] = gr.transform('sum').astype('float16')  # これ怪しいかも
 
     # quantile
@@ -134,7 +133,6 @@ def create_day_feature(df, col, prefix, change_utc2asia=False,
         df.loc[:, col] = pd.to_datetime(df[col]) + timedelta(hours=9)
     else:
         df.loc[:, col] = pd.to_datetime(df[col])
-    df.loc[:, col] = pd.to_datetime(df[col])
 
     for attr in attrs:
         dtype = np.int16 if attr == 'year' else np.int8
