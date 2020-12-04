@@ -53,7 +53,6 @@ class ModelLGB(Model):
                                 valid_sets=(dtrain, dvalid),
                                 early_stopping_rounds=early_stopping_rounds,
                                 verbose_eval=verbose_eval,
-                                feval=pr_auc
                                 )
 
         else:
