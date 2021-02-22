@@ -9,7 +9,7 @@ import joblib
 CONFIG_FILE = '../configs/config.yaml'
 
 with open(CONFIG_FILE) as file:
-    yml = yaml.load(file)
+    yml = yaml.load(file, Loader=yaml.FullLoader)
 RAW_DATA_DIR_NAME = yml['SETTING']['RAW_DATA_DIR_NAME']
 
 

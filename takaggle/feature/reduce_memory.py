@@ -3,7 +3,8 @@ import pandas as pd
 
 
 # メモリ削減関数
-def reduce_mem_usage(df):
+# メモリ削減関数
+def reduce_mem_usage(df, verbose=False):
     start_mem_usg = df.memory_usage().sum() / 1024**2
     numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']
     print("Memory usage of properties dataframe is :", start_mem_usg, " MB")
@@ -13,9 +14,10 @@ def reduce_mem_usage(df):
         col_type = df[col].dtypes
         if col_type in numerics:
             # Print current column type
-            # print("******************************")
-            # print("Column: ",col)
-            # print("dtype before: ",df[col].dtype)
+            if verbose:
+                print("******************************")
+                print("Column: ",col)
+                print("dtype before: ",df[col].dtype)
             # make variables for Int, max and min
             IsInt = False
             mx = df[col].max()
@@ -58,11 +60,12 @@ def reduce_mem_usage(df):
                 else:
                     df[col] = df[col].astype(np.float32)
 
-            # Print new column type
-            # print("dtype after: ",df[col].dtype)
-            # print("******************************")
+            if verbose:
+                # Print new column type
+                print("dtype after: ",df[col].dtype)
+                print("******************************")
     # Print final result
-    # print("___MEMORY USAGE AFTER COMPLETION:___")
+    print("___MEMORY USAGE AFTER COMPLETION:___")
     mem_usg = df.memory_usage().sum() / 1024**2
     print("Memory usage is: ", mem_usg, " MB")
     print("This is ", 100*mem_usg/start_mem_usg, "% of the initial size")

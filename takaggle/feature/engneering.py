@@ -49,7 +49,6 @@ def aggregation(df, target_col, agg_target_col):
     df[f'{target_col_name}{agg_target_col}_min'] = gr.transform('min').astype('float16')
     df[f'{target_col_name}{agg_target_col}_std'] = gr.transform('std').astype('float16')
     df[f'{target_col_name}{agg_target_col}_median'] = gr.transform('median').astype('float16')
-    df[f'{target_col_name}{agg_target_col}_sum'] = gr.transform('sum').astype('float16')  # これ怪しいかも
 
     # quantile
     # 10%, 25%, 50%, 75%, 90%

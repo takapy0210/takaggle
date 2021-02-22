@@ -28,7 +28,7 @@ def sklearn_label_encoder(df, cols, del_col=False):
         for col in cols:
             le = LabelEncoder()
             not_null = df[col][df[col].notnull()]  # nullのデータは変換対象外
-            df[col + '_sklearn_lbl_enc'] = pd.Series(le.fit_transform(not_null), index=not_null.index)
+            df[col + '_lbl_enc'] = pd.Series(le.fit_transform(not_null), index=not_null.index)
     return df
 
 
