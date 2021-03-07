@@ -15,21 +15,13 @@ def sklearn_label_encoder(df, cols, del_col=False):
     Returns:
         pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
     """
-    if del_col:
-        for col in cols:
-            le = LabelEncoder()
-            le_df = pd.DataFrame(le.fit_transform(df[[col]])).add_prefix(col + '_lbl_enc_')
-            # 元のDFに結合
-            df = pd.concat([df, le_df], axis=1)
-            # leしたカラムを除外
-            df = df.drop(col, axis=1)
-    else:
-        # 0~割り振られる
-        for col in cols:
-            le = LabelEncoder()
-            not_null = df[col][df[col].notnull()]  # nullのデータは変換対象外
-            df[col + '_lbl_enc'] = pd.Series(le.fit_transform(not_null), index=not_null.index)
-    return df
+    output_df = df.copy()
+    for col in cols:
+        le = LabelEncoder()
+        output_df.loc[:, f'{col}_lbl_enc'] = pd.Series(le.fit_transform(df[[col]]))
+        if del_col:
+            output_df = output_df.drop(col, axis=1)
+    return output_df
 
 
 def sklearn_oh_encoder(df, cols, del_col=False):
