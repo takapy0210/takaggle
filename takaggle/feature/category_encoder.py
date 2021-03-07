@@ -3,14 +3,14 @@ import category_encoders as ce
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 
-def sklearn_label_encoder(df, cols, del_col=False):
+def sklearn_label_encoder(df, cols, drop_col=False):
     """カテゴリ変換
     sklearnのLabelEncoderでEncodingを行う
 
     Args:
         df: カテゴリ変換する対象のデータフレーム
         cols (list of str): カテゴリ変換する対象のカラムリスト
-        del_col (bool): エンコード対象のカラムを削除するか否か
+        drop_col (bool): エンコード対象のカラムを削除するか否か
 
     Returns:
         pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
@@ -19,38 +19,32 @@ def sklearn_label_encoder(df, cols, del_col=False):
     for col in cols:
         le = LabelEncoder()
         output_df.loc[:, f'{col}_lbl_enc'] = pd.Series(le.fit_transform(output_df[[col]]))
-        if del_col:
+        if drop_col:
             output_df = output_df.drop(col, axis=1)
     return output_df
 
 
-def sklearn_oh_encoder(df, cols, del_col=False):
+def sklearn_oh_encoder(df, cols, drop_col=False):
     """カテゴリ変換
     sklearnのOneHotEncoderでEncodingを行う
 
     Args:
         df: カテゴリ変換する対象のデータフレーム
         cols (list of str): カテゴリ変換する対象のカラムリスト
-        del_col (bool): エンコード対象のカラムを削除するか否か
+        drop_col (bool): エンコード対象のカラムを削除するか否か
 
     Returns:
         pd.Dataframe: dfにカテゴリ変換したカラムを追加したデータフレーム
     """
-    if del_col:
-        for col in cols:
-            ohe = OneHotEncoder(sparse=False)
-            ohe_df = pd.DataFrame(ohe.fit_transform(df[[col]])).add_prefix(col + '_oh_enc_')
-            # 元のDFに結合
-            df = pd.concat([df, ohe_df], axis=1)
-            # oheしたカラムを除外
-            df = df.drop(col, axis=1)
-    else:
-        for col in cols:
-            ohe = OneHotEncoder(sparse=False)
-            ohe_df = pd.DataFrame(ohe.fit_transform(df[[col]])).add_prefix(col + '_oh_enc_')
-            # 元のDFに結合
-            df = pd.concat([df, ohe_df], axis=1)
-    return df
+    output_df = df.copy()
+    for col in cols:
+        ohe = OneHotEncoder(sparse=False)
+        ohe_df = pd.DataFrame(ohe.fit_transform(output_df[[col]])).add_prefix(col + '_oh_enc_')
+        # 元のDFに結合
+        output_df = pd.concat([output_df, ohe_df], axis=1)
+        if drop_col:
+            output_df = output_df.drop(col, axis=1)
+    return output_df
 
 
 def count_encoder(df, cols):
