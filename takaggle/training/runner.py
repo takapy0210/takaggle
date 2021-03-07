@@ -85,7 +85,7 @@ def stratified_group_k_fold(X, y, groups, k, seed=None) -> (list, list):
 
 class Runner:
 
-    def __init__(self, run_name, model_cls, features, setting, params, cv, categoricals=[]):
+    def __init__(self, run_name, model_cls, features, setting, params, cv, categoricals=[], is_add_pseudo=False, pseudo_label_file=''):
         """コンストラクタ
         :run_name: runの名前
         :model_cls: モデルのクラス
@@ -154,6 +154,11 @@ class Runner:
         if self.calc_shap:
             self.shap_values = np.zeros(self.train_x.shape)
         self.categoricals = categoricals  # カテゴリ変数を指定する場合に使用する
+        self.is_add_pseudo = is_add_pseudo  # pseudo_labelデータを学習に私用する場合に追加する
+        self.pseudo_label_file = pseudo_label_file  # pseudo_labelデータを学習に私用する場合に追加する. 特徴量と同じディレクトリに存在するファイルを指定すること
+        if self.is_add_pseudo & pseudo_label_file == '':
+            print('pseudo_label_fileが設定されていません。処理を終了します')
+            sys.exit(0)
 
         # ログにデータ件数を出力
         self.logger.info(f'{self.run_name} - train_x shape: {self.train_x.shape}')
@@ -244,17 +249,15 @@ class Runner:
             tr_x, tr_y = train_x.iloc[tr_idx], train_y.iloc[tr_idx]
             va_x, va_y = train_x.iloc[va_idx], train_y.iloc[va_idx]
 
-            # TODO: ここもconfigで良い感じに管理できると良いね
             # pseudo labelingを行う場合
-            """
-            # pseudo labelingデータを追加する
-            pseudo_df = pd.read_pickle(self.feature_dir_name + 'pseudo_labeling_lgb_hogehoge.pkl')
-            pseudo_df_x = pseudo_df.drop('target', axis=1)[self.features]
-            pseudo_df_y = pseudo_df['target']
-            # 結合
-            tr_x = pd.concat([tr_x, pseudo_df_x], axis=0)
-            tr_y = pd.concat([tr_y, pseudo_df_y], axis=0)
-            """
+            if self.is_add_pseudo:
+                # pseudo labelingデータを追加する
+                pseudo_df = pd.read_pickle(self.feature_dir_name + self.pseudo_label_file)
+                pseudo_df_x = pseudo_df.drop(self.target, axis=1)[self.features]
+                pseudo_df_y = pseudo_df[self.target]
+                # 結合
+                tr_x = pd.concat([tr_x, pseudo_df_x], axis=0)
+                tr_y = pd.concat([tr_y, pseudo_df_y], axis=0)
 
             # 学習を行う
             model = self.build_model(i_fold)
