@@ -255,6 +255,8 @@ class Runner:
                 # pseudo labelingデータを追加する
                 pseudo_df = pd.read_pickle(self.feature_dir_name + self.pseudo_label_file)
                 pseudo_df_x = pseudo_df.drop(self.target, axis=1)[self.features]
+                if self.metrics_name == 'RMSLE':
+                    pseudo_df[self.target] = np.log1p(pseudo_df[self.target])
                 pseudo_df_y = pseudo_df[self.target]
                 # 結合
                 tr_x = pd.concat([tr_x, pseudo_df_x], axis=0)
