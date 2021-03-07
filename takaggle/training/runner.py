@@ -156,9 +156,10 @@ class Runner:
         self.categoricals = categoricals  # カテゴリ変数を指定する場合に使用する
         self.is_add_pseudo = is_add_pseudo  # pseudo_labelデータを学習に私用する場合に追加する
         self.pseudo_label_file = pseudo_label_file  # pseudo_labelデータを学習に私用する場合に追加する. 特徴量と同じディレクトリに存在するファイルを指定すること
-        if self.is_add_pseudo & pseudo_label_file == '':
-            print('pseudo_label_fileが設定されていません。処理を終了します')
-            sys.exit(0)
+        if self.is_add_pseudo:
+            if self.pseudo_label_file == '':
+                print('pseudo_label_fileが設定されていません。処理を終了します')
+                sys.exit(0)
 
         # ログにデータ件数を出力
         self.logger.info(f'{self.run_name} - train_x shape: {self.train_x.shape}')
