@@ -39,10 +39,27 @@ class Logger:
         self.general_logger = logging.getLogger(path + 'general')
         self.result_logger = logging.getLogger(path + 'result')
         self.info_logger = logging.getLogger('main')
+        """
         stream_handler = logging.StreamHandler()
         file_general_handler = logging.FileHandler(path + 'general.log')
         file_result_handler = logging.FileHandler(path + 'result.log')
+
         if len(self.general_logger.handlers) == 0:
+            self.general_logger.addHandler(stream_handler)
+            self.general_logger.addHandler(file_general_handler)
+            self.general_logger.setLevel(logging.INFO)
+            self.result_logger.addHandler(stream_handler)
+            self.result_logger.addHandler(file_result_handler)
+            self.result_logger.setLevel(logging.INFO)
+            self.info_logger.addHandler(stream_handler)
+            self.info_logger.addHandler(file_result_handler)
+            self.info_logger.setLevel(logging.DEBUG)
+        """
+
+        if not self.general_logger.hasHandlers():
+            stream_handler = logging.StreamHandler()
+            file_general_handler = logging.FileHandler(path + 'general.log')
+            file_result_handler = logging.FileHandler(path + 'result.log')
             self.general_logger.addHandler(stream_handler)
             self.general_logger.addHandler(file_general_handler)
             self.general_logger.setLevel(logging.INFO)
