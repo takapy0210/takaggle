@@ -18,7 +18,7 @@ def sklearn_label_encoder(df, cols, del_col=False):
     output_df = df.copy()
     for col in cols:
         le = LabelEncoder()
-        output_df.loc[:, f'{col}_lbl_enc'] = pd.Series(le.fit_transform(df[[col]]))
+        output_df.loc[:, f'{col}_lbl_enc'] = pd.Series(le.fit_transform(output_df[[col]]))
         if del_col:
             output_df = output_df.drop(col, axis=1)
     return output_df
