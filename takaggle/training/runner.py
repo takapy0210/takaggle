@@ -475,7 +475,7 @@ class Runner:
         run_fold_name = f'{self.run_name}-fold{i_fold}'
         return self.model_cls(run_fold_name, self.params, self.categoricals)
 
-    def load_x_train(self) -> pd.DataFrame:
+    def load_x_train(self, all_cols=False) -> pd.DataFrame:
         """学習データの特徴量を読み込む
         列名で抽出する以上のことを行う場合、このメソッドの修正が必要
         :return: 学習データの特徴量
@@ -489,6 +489,10 @@ class Runner:
         # df = pd.read_csv('../input/train.csv')[self.features]
         # df = pd.read_pickle(self.feature_dir_name + 'X_train.pkl')
         df = pd.read_pickle(self.feature_dir_name + f'{self.train_file_name}')
+        if all_cols:
+            # 全てのカラムを返却する場合
+            # stratify-cvなどで、目的変数を対象にしたい場合はこちらを呼ぶ
+            return df
         df = df[self.features]
         # -------------------------------------------------
 
@@ -547,7 +551,7 @@ class Runner:
         if self.target == self.cv_target_sf_column:
             return self.train_y
         else:
-            df = self.load_x_train() if self.train_x is None else self.train_x
+            df = self.load_x_train(all_cols=True)
             return df[self.cv_target_sf_column]
 
     def load_index_k_fold(self, i_fold: int) -> np.array:
@@ -617,7 +621,7 @@ class Runner:
         :return: foldに対応するレコードのインデックス
         """
         # 学習データ・バリデーションデータを分けるインデックスを返す
-        stratify_data = self.load_stratify_target()  # 分布の比率を維持したいデータ（基本的には正解ラベル）
+        stratify_data = self.load_stratify_target(all_cols=True)  # 分布の比率を維持したいデータ（基本的には正解ラベル）
         group_data = self.load_group_target()  # グループにしたいデータ
 
         stratified_group_k_list = []
