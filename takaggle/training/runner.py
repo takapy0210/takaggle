@@ -621,7 +621,7 @@ class Runner:
         :return: foldに対応するレコードのインデックス
         """
         # 学習データ・バリデーションデータを分けるインデックスを返す
-        stratify_data = self.load_stratify_target(all_cols=True)  # 分布の比率を維持したいデータ（基本的には正解ラベル）
+        stratify_data = self.load_stratify_target()  # 分布の比率を維持したいデータ（基本的には正解ラベル）
         group_data = self.load_group_target()  # グループにしたいデータ
 
         stratified_group_k_list = []
