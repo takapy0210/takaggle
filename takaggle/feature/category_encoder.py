@@ -39,7 +39,9 @@ def sklearn_oh_encoder(df, cols, drop_col=False):
     output_df = df.copy()
     for col in cols:
         ohe = OneHotEncoder(sparse=False)
-        ohe_df = pd.DataFrame(ohe.fit_transform(output_df[[col]])).add_prefix(col + '_oh_enc_')
+        ohe_df = pd.DataFrame((ohe.fit_transform(output_df[[col]])))
+        ohe_df.columns = ohe.categories_[0].tolist()
+        ohe_df = ohe_df.add_prefix(f'{col}_')
         # 元のDFに結合
         output_df = pd.concat([output_df, ohe_df], axis=1)
         if drop_col:
