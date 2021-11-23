@@ -1,17 +1,18 @@
 pandas
 numpy
 scipy
-tqdm
 scikit-learn
-seaborn
-torch
-transformers
 category_encoders
-catboost
-lightgbm
-tensorflow
-keras
-mlflow
 pyyaml
-shap
-kaggle
+tqdm
+# seaborn
+# torch
+# transformers
+# category_encoders
+# catboost
+# lightgbm
+# tensorflow
+# keras
+# mlflow
+# shap
+# kaggle
