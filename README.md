@@ -22,6 +22,26 @@ from takaggle.feature import category_encoder
 from takaggle.utils import get_logger
 ```
 
+## eda
+
+```python
+from takaggle.eda import missing_values, most_frequent_values, unique_values, show_all
+
+df = pd.read_csv('hoge.csv')
+
+# show missing value
+missing_values(df)
+
+# show most frequent value
+most_frequent_values(df)
+
+# show unique value
+unique_values(df)
+
+# View all of the above at once
+show_all(df)
+```
+
 ## utils
 
 ```python

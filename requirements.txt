@@ -2,17 +2,3 @@ pandas
 numpy
 scipy
 scikit-learn
-category_encoders
-pyyaml
-tqdm
-# seaborn
-# torch
-# transformers
-# category_encoders
-# catboost
-# lightgbm
-# tensorflow
-# keras
-# mlflow
-# shap
-# kaggle

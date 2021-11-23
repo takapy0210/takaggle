@@ -15,7 +15,7 @@ def read_requirements():
 
 setup(
     name='takaggle',
-    version='1.0.1',
+    version='1.0.2',
     description='A set of scripts used in the data analysis competition',
     long_description=long_description,
     long_description_content_type='text/markdown',
