@@ -44,11 +44,45 @@ show_all(df)
 
 ## utils
 
-```python
-from takaggle.utils import get_logger
 
+```python
+from takaggle.utils import get_logger, elapsed_time
+
+# Log output
 LOGGER = get_logger()
 LOGGER.info('hogehoge.')
+
+# Measure the processing time of a function
+@elapsed_time(LOGGER)
+def load_data() -> dict:
+    """データの読み込み"""
+
+    # 読み込むファイルを定義
+    inputs = {
+        'train': '../data/train.csv',
+        'test': '../data/test.csv',
+    }
+    dfs = {}
+    for k, v in inputs.items():
+        dfs[k] = pd.read_csv(v)
+        LOGGER.info(f'"{k}" dataframe shape: {dfs[k].shape}')
+
+    return dfs
+
+dfs = load_data()
+# [2021-11-23 23:07:26] [ INFO] ***** Beg: load_data *****
+# [2021-11-23 23:07:27] [ INFO] "train" dataframe shape: (91333, 18)
+# [2021-11-23 23:07:28] [ INFO] "test" dataframe shape: (91822, 17)
+# [2021-11-23 23:07:28] [ INFO] ***** End: load_data 2.02sec [1.4GB(+0.1GB)] *****
+
+```
+
+Measure the processing time of a function
+
+```python
+from takaggle.utils import get_logger, elapsed_time
+
+
 
 ```
 

@@ -5,6 +5,7 @@
 import sys
 import logging
 
+
 def get_logger(level: int = logging.INFO, out_file: str = None):
     """Get Logger Function.
 
@@ -14,7 +15,6 @@ def get_logger(level: int = logging.INFO, out_file: str = None):
 
     Returns:
         loggerを出力．
-
     """
     logger = logging.getLogger()
     logger.setLevel(level)
@@ -26,7 +26,7 @@ def get_logger(level: int = logging.INFO, out_file: str = None):
             handler = logging.FileHandler(out_file)
         handler.setLevel(level)
         formatter = logging.Formatter(
-            fmt="[%(asctime)s] [%(levelname)5s] %(message)s",
+            fmt="[%(asctime)s] [%(levelname)6s] %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S"
         )
         handler.setFormatter(formatter)
