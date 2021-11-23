@@ -3,7 +3,6 @@ import pandas as pd
 
 
 # メモリ削減関数
-# メモリ削減関数
 def reduce_mem_usage(df, verbose=False):
     start_mem_usg = df.memory_usage().sum() / 1024**2
     numerics = ['int8', 'int16', 'int32', 'int64', 'float16', 'float32', 'float64']

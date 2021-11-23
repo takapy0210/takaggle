@@ -12,15 +12,24 @@ TBD
 pip install git+https://github.com/takapy0210/takaggle
 ```
 
-## Usage
-
+# Usage
 
 ### import
 
 ```python
 from takaggle.eda import show_all
 from takaggle.feature import category_encoder
-...
+from takaggle.utils import get_logger
+```
+
+## utils
+
+```python
+from takaggle.utils import get_logger
+
+LOGGER = get_logger()
+LOGGER.info('hogehoge.')
+
 ```
 
 
@@ -35,10 +44,11 @@ TBD
 
 ## Deploy
 increment `deploy.sh` tag_name
-```
+
+```sh
 tag_name="v1.0.7"
 ```
 
-```
+```sh
 sh deploy.sh
 ```
